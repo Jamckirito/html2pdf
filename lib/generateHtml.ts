@@ -17,8 +17,31 @@ function grandTotal(items: LineItem[]): number {
   }, 0);
 }
 
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
 export function generateHtml(data: QuotationData): string {
   const total = grandTotal(data.items);
+  const empresa = escapeHtml(data.empresa);
+  const empresaSubtitulo = escapeHtml(data.empresaSubtitulo);
+  const empresaTelefono = escapeHtml(data.empresaTelefono);
+  const empresaEmail = escapeHtml(data.empresaEmail);
+  const empresaWeb = escapeHtml(data.empresaWeb);
+  const numeroCotizacion = escapeHtml(data.numeroCotizacion);
+  const cliente = escapeHtml(data.cliente);
+  const direccion = escapeHtml(data.direccion);
+  const fecha = escapeHtml(data.fecha);
+  const validoHasta = escapeHtml(data.validoHasta);
+  const vendedor = escapeHtml(data.vendedor);
+  const telefono = escapeHtml(data.telefono);
+  const correo = escapeHtml(data.correo);
+  const condiciones = escapeHtml(data.condiciones);
 
   const itemRows = data.items
     .map((item, i) => {
@@ -26,8 +49,8 @@ export function generateHtml(data: QuotationData): string {
       return `
       <tr>
         <td class="tc">${i + 1}</td>
-        <td class="code">${item.codigo}</td>
-        <td>${item.descripcion}</td>
+        <td class="code">${escapeHtml(item.codigo)}</td>
+        <td>${escapeHtml(item.descripcion)}</td>
         <td class="tr">${item.cantidad !== "" ? item.cantidad : ""}</td>
         <td class="tr">${item.precioUnit !== "" ? "RD$" + fmt(item.precioUnit) : ""}</td>
         <td class="tr">${tot !== "" ? "RD$" + fmt(tot) : ""}</td>
@@ -37,7 +60,7 @@ export function generateHtml(data: QuotationData): string {
 
   const notasHtml = data.notas
     .filter(Boolean)
-    .map((n) => `<li>${n}</li>`)
+    .map((n) => `<li>${escapeHtml(n)}</li>`)
     .join("");
 
   return `<!DOCTYPE html>
@@ -53,9 +76,14 @@ export function generateHtml(data: QuotationData): string {
     /* Header */
     .hd{background:#1a2e4a;padding:22px 30px;color:#fff}
     .hd-top{display:flex;align-items:center;gap:14px}
-    .logo{width:56px;height:56px;background:#c9a84c;border-radius:50%;display:grid;place-items:center;flex-shrink:0}
-    .logo-lines{display:flex;flex-direction:column;gap:3px}
-    .logo-line{height:3px;background:#1a2e4a;border-radius:2px;width:26px}
+    .logo{
+      width:64px;
+      height:64px;
+      object-fit:contain;
+      display:block;
+      flex-shrink:0;
+      filter:drop-shadow(0 2px 6px rgba(0,0,0,.28));
+    }
     .brand h1{font-size:22px;font-weight:800;letter-spacing:.02em;line-height:1}
     .brand h1 span{color:#c9a84c}
     .brand .sub{font-size:10.5px;color:rgba(255,255,255,.55);margin-top:3px;font-style:italic}
@@ -114,14 +142,14 @@ export function generateHtml(data: QuotationData): string {
 
   <div class="hd">
     <div class="hd-top">
-      <div class="logo"><div class="logo-lines"><div class="logo-line"></div><div class="logo-line" style="width:20px"></div><div class="logo-line"></div></div></div>
+      <img class="logo" src="/ISOTIPO.png" alt="Logo de empresa" />
       <div class="brand">
-        <h1>${data.empresa.replace("EPD", "<span>EPD</span>")}</h1>
-        <p class="sub">${data.empresaSubtitulo}</p>
+        <h1>${empresa.replace("EPD", "<span>EPD</span>")}</h1>
+        <p class="sub">${empresaSubtitulo}</p>
         <div class="contacts">
-          <span>📞 ${data.empresaTelefono}</span>
-          <span>✉ ${data.empresaEmail}</span>
-          <span>🌐 ${data.empresaWeb}</span>
+          <span>📞 ${empresaTelefono}</span>
+          <span>✉ ${empresaEmail}</span>
+          <span>🌐 ${empresaWeb}</span>
         </div>
       </div>
     </div>
@@ -129,18 +157,18 @@ export function generateHtml(data: QuotationData): string {
 
   <div class="band">
     <h2>Cotización</h2>
-    <span class="num">${data.numeroCotizacion}</span>
+    <span class="num">${numeroCotizacion}</span>
   </div>
 
   <div class="meta">
-    <div class="mc"><span class="ml">N° Cotización</span><span class="mv">${data.numeroCotizacion}</span></div>
-    <div class="mc"><span class="ml">Cliente</span><span class="mv">${data.cliente || "—"}</span></div>
-    <div class="mc"><span class="ml">Fecha</span><span class="mv">${data.fecha}</span></div>
-    <div class="mc"><span class="ml">Dirección</span><span class="mv">${data.direccion || "—"}</span></div>
-    <div class="mc"><span class="ml">Válido hasta</span><span class="mv">${data.validoHasta}</span></div>
-    <div class="mc"><span class="ml">Teléfono</span><span class="mv">${data.telefono || "—"}</span></div>
-    <div class="mc"><span class="ml">Vendedor</span><span class="mv">${data.vendedor || "—"}</span></div>
-    <div class="mc"><span class="ml">Correo</span><span class="mv">${data.correo || "—"}</span></div>
+    <div class="mc"><span class="ml">N° Cotización</span><span class="mv">${numeroCotizacion}</span></div>
+    <div class="mc"><span class="ml">Cliente</span><span class="mv">${cliente || "—"}</span></div>
+    <div class="mc"><span class="ml">Fecha</span><span class="mv">${fecha}</span></div>
+    <div class="mc"><span class="ml">Dirección</span><span class="mv">${direccion || "—"}</span></div>
+    <div class="mc"><span class="ml">Válido hasta</span><span class="mv">${validoHasta}</span></div>
+    <div class="mc"><span class="ml">Teléfono</span><span class="mv">${telefono || "—"}</span></div>
+    <div class="mc"><span class="ml">Vendedor</span><span class="mv">${vendedor || "—"}</span></div>
+    <div class="mc"><span class="ml">Correo</span><span class="mv">${correo || "—"}</span></div>
   </div>
 
   <div class="tw">
@@ -170,7 +198,7 @@ export function generateHtml(data: QuotationData): string {
     </div>
   </div>
 
-  ${data.condiciones ? `<div class="cond">Condiciones de pago: <strong>${data.condiciones}</strong></div>` : ""}
+  ${condiciones ? `<div class="cond">Condiciones de pago: <strong>${condiciones}</strong></div>` : ""}
 
   ${notasHtml ? `
   <div class="notes">
@@ -184,8 +212,8 @@ export function generateHtml(data: QuotationData): string {
   </div>
 
   <div class="ft">
-    <span>© 2026 ${data.empresa} — República Dominicana</span>
-    <span class="badge">Válido hasta ${data.validoHasta}</span>
+    <span>© 2026 ${empresa} — República Dominicana</span>
+    <span class="badge">Válido hasta ${validoHasta}</span>
   </div>
 
 </div>

@@ -1,6 +1,7 @@
 "use client";
 
-import { Download, Eye, EyeOff, RefreshCw, Settings2, FileText } from "lucide-react";
+import Image from "next/image";
+import { Download, Eye, EyeOff, RefreshCw, Settings2 } from "lucide-react";
 import type { PdfOptions, PaperFormat, PageOrientation } from "@/lib/types";
 
 interface ToolbarProps {
@@ -40,7 +41,14 @@ export default function Toolbar({
     <header className="toolbar">
       {/* Brand */}
       <div className="toolbar-brand">
-        <FileText size={18} className="brand-icon" />
+        <Image
+          src="/ISOTIPO.png"
+          alt="Shutter del Sur logo"
+          width={28}
+          height={28}
+          className="brand-logo"
+          priority
+        />
         <span className="brand-name">HTML<span className="brand-arrow">→</span>PDF</span>
       </div>
 
@@ -164,12 +172,12 @@ export default function Toolbar({
           display: flex;
           align-items: center;
           gap: 16px;
-          padding: 0 16px;
-          height: 56px;
+          padding: 10px 16px;
+          min-height: 56px;
           background: var(--surface);
           border-bottom: 1px solid var(--border);
           flex-shrink: 0;
-          overflow-x: auto;
+          flex-wrap: wrap;
         }
         .toolbar-brand {
           display: flex;
@@ -177,7 +185,11 @@ export default function Toolbar({
           gap: 8px;
           flex-shrink: 0;
         }
-        .brand-icon { color: var(--amber); }
+        .brand-logo {
+          width: 28px;
+          height: 28px;
+          object-fit: contain;
+        }
         .brand-name {
           font-family: var(--sans);
           font-weight: 800;
@@ -194,6 +206,7 @@ export default function Toolbar({
           gap: 12px;
           flex: 1;
           min-width: 0;
+          flex-wrap: wrap;
         }
         .toolbar-actions {
           display: flex;
@@ -308,6 +321,54 @@ export default function Toolbar({
           flex-shrink: 0;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 1200px) {
+          .toolbar {
+            gap: 12px;
+          }
+          .toolbar-controls {
+            width: 100%;
+            order: 3;
+          }
+          .toolbar-actions {
+            margin-left: auto;
+          }
+        }
+
+        @media (max-width: 720px) {
+          .toolbar {
+            align-items: stretch;
+            gap: 10px;
+          }
+          .toolbar-brand {
+            width: 100%;
+          }
+          .toolbar-controls {
+            width: 100%;
+            gap: 10px;
+          }
+          .ctrl-group {
+            min-width: calc(50% - 5px);
+          }
+          .ctrl-group.ctrl-inline {
+            min-width: 100%;
+          }
+          .ctrl-input,
+          .ctrl-select,
+          .ctrl-range {
+            width: 100%;
+          }
+          .margin-grid {
+            grid-template-columns: 1fr 1fr;
+          }
+          .margin-input {
+            width: 100%;
+          }
+          .toolbar-actions {
+            width: 100%;
+            justify-content: flex-end;
+          }
+        }
       `}</style>
     </header>
   );

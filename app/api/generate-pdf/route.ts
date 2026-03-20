@@ -8,6 +8,7 @@ export async function POST(req: NextRequest) {
   try {
     const body: GeneratePdfRequest = await req.json();
     const { html, options } = body;
+    const requestOrigin = req.nextUrl.origin;
 
     if (!html?.trim()) {
       return NextResponse.json(
@@ -31,8 +32,12 @@ export async function POST(req: NextRequest) {
 
     const page = await browser.newPage();
 
-    // Set content and wait for fonts / network resources
-    await page.setContent(html, { waitUntil: "networkidle0", timeout: 15000 });
+    // Set content and wait for fonts / network resources.
+    // Inject a base URL so assets from /public (e.g. /ISOTIPO.png) resolve correctly.
+    const htmlWithBase = html.includes("<base ")
+      ? html
+      : html.replace("<head>", `<head><base href="${requestOrigin}/">`);
+    await page.setContent(htmlWithBase, { waitUntil: "networkidle0", timeout: 15000 });
 
     // Build margin object
     const margin = options.margin ?? {
@@ -54,12 +59,13 @@ export async function POST(req: NextRequest) {
 
     const filename = encodeURIComponent(options.filename || "documento");
 
-    return new NextResponse(pdf, {
+    const pdfBuffer = Buffer.from(pdf);
+    return new NextResponse(pdfBuffer, {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="${filename}.pdf"`,
-        "Content-Length": pdf.length.toString(),
+        "Content-Length": pdfBuffer.length.toString(),
       },
     });
   } catch (err) {

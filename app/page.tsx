@@ -51,6 +51,8 @@ export default function Home() {
 
   const handleReset = useCallback(() => {
     setFormData(defaultQuotation);
+    setOptions(defaultPdfOptions);
+    setShowPreview(true);
     setError(null);
   }, []);
 

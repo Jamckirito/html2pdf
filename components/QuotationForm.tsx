@@ -312,6 +312,7 @@ export default function QuotationForm({ data, onChange }: QuotationFormProps) {
           display: flex;
           flex-direction: column;
           gap: 4px;
+          overflow-x: auto;
         }
         .items-head {
           display: grid;
@@ -456,6 +457,37 @@ export default function QuotationForm({ data, onChange }: QuotationFormProps) {
         }
         .del-btn:hover:not(:disabled) { color: #e05252; background: rgba(224,82,82,.1); }
         .del-btn:disabled { opacity: .2; cursor: not-allowed; }
+
+        @media (max-width: 900px) {
+          .grid-3 { grid-template-columns: 1fr 1fr; }
+          :global(.span-3) { grid-column: span 2; }
+        }
+
+        @media (max-width: 700px) {
+          .form-root {
+            padding: 12px;
+          }
+          .grid-2,
+          .grid-3 {
+            grid-template-columns: 1fr;
+          }
+          :global(.span-2),
+          :global(.span-3) {
+            grid-column: span 1;
+          }
+          .items-head,
+          .item-row {
+            min-width: 560px;
+          }
+          .items-footer {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+          }
+          .grand-total {
+            justify-content: space-between;
+          }
+        }
       `}</style>
     </div>
   );
