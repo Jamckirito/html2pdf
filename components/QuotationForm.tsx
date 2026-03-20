@@ -247,7 +247,7 @@ export default function QuotationForm({ data, onChange }: QuotationFormProps) {
                     title="Eliminar fila"
                   >
                     <Trash2 size={12} />
-                    <span>Quitar</span>
+                    <span>Eliminar línea</span>
                   </button>
                 </div>
               </div>
@@ -347,6 +347,7 @@ export default function QuotationForm({ data, onChange }: QuotationFormProps) {
           flex-direction: column;
           gap: 4px;
           overflow-x: auto;
+          overflow-y: hidden;
         }
         .items-toolbar {
           display: flex;
@@ -362,10 +363,11 @@ export default function QuotationForm({ data, onChange }: QuotationFormProps) {
         }
         .items-head {
           display: grid;
-          grid-template-columns: 28px 80px 1fr 60px 100px 110px 120px;
+          grid-template-columns: 32px 96px minmax(180px, 1fr) 72px 110px 120px 152px;
           gap: 6px;
           padding: 0 4px 6px;
           border-bottom: 1px solid var(--border);
+          min-width: 760px;
         }
         .items-head span {
           font-family: var(--mono);
@@ -377,14 +379,17 @@ export default function QuotationForm({ data, onChange }: QuotationFormProps) {
         }
         .item-row {
           display: grid;
-          grid-template-columns: 28px 80px 1fr 60px 100px 110px 120px;
+          grid-template-columns: 32px 96px minmax(180px, 1fr) 72px 110px 120px 152px;
           gap: 6px;
           align-items: center;
+          min-width: 760px;
         }
         .row-actions {
           display: flex;
           gap: 6px;
           justify-content: flex-end;
+          align-items: center;
+          flex-wrap: nowrap;
         }
         .row-num {
           font-family: var(--mono);
@@ -515,20 +520,21 @@ export default function QuotationForm({ data, onChange }: QuotationFormProps) {
         }
         .del-btn:hover:not(:disabled) { color: #e05252; background: rgba(224,82,82,.1); }
         .del-btn-danger {
-          color: #f19a9a;
-          border-color: rgba(224,82,82,.25);
-          background: rgba(224,82,82,.06);
+          color: #ffd8d8;
+          border-color: rgba(224,82,82,.45);
+          background: rgba(224,82,82,.18);
         }
         .del-btn-danger span {
           font-family: var(--mono);
-          font-size: 10px;
+          font-size: 9.5px;
           letter-spacing: .04em;
           text-transform: uppercase;
+          white-space: nowrap;
         }
         .del-btn-danger:hover:not(:disabled) {
-          border-color: rgba(224,82,82,.45);
-          background: rgba(224,82,82,.14);
-          color: #ffd0d0;
+          border-color: rgba(224,82,82,.7);
+          background: rgba(224,82,82,.28);
+          color: #fff;
         }
         .del-btn:disabled { opacity: .2; cursor: not-allowed; }
 
@@ -583,6 +589,7 @@ export default function QuotationForm({ data, onChange }: QuotationFormProps) {
           }
           .row-actions {
             justify-content: flex-start;
+            flex-wrap: wrap;
           }
           .items-footer {
             flex-direction: column;
