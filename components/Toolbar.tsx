@@ -189,6 +189,7 @@ export default function Toolbar({
           width: 28px;
           height: 28px;
           object-fit: contain;
+          border-radius: 0;
         }
         .brand-name {
           font-family: var(--sans);

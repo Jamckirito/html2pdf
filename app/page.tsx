@@ -3,14 +3,14 @@
 import { useState, useCallback, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Toolbar from "@/components/Toolbar";
-import { defaultQuotation, defaultPdfOptions, type PdfOptions, type QuotationData } from "@/lib/types";
+import { createDefaultQuotation, defaultPdfOptions, type PdfOptions, type QuotationData } from "@/lib/types";
 import { generateHtml } from "@/lib/generateHtml";
 
 const QuotationForm = dynamic(() => import("@/components/QuotationForm"), { ssr: false });
 const LivePreview   = dynamic(() => import("@/components/LivePreview"),   { ssr: false });
 
 export default function Home() {
-  const [formData, setFormData]   = useState<QuotationData>(defaultQuotation);
+  const [formData, setFormData]   = useState<QuotationData>(() => createDefaultQuotation());
   const [html, setHtml]           = useState("");
   const [options, setOptions]     = useState<PdfOptions>(defaultPdfOptions);
   const [loading, setLoading]     = useState(false);
@@ -50,7 +50,7 @@ export default function Home() {
   }, [html, options]);
 
   const handleReset = useCallback(() => {
-    setFormData(defaultQuotation);
+    setFormData(createDefaultQuotation());
     setOptions(defaultPdfOptions);
     setShowPreview(true);
     setError(null);

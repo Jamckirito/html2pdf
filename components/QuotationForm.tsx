@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { Plus, Trash2, Building2, User, Package } from "lucide-react";
 import type { QuotationData, LineItem } from "@/lib/types";
 
@@ -10,6 +10,13 @@ interface QuotationFormProps {
 }
 
 let nextId = 100;
+const createEmptyItem = (): LineItem => ({
+  id: String(nextId++),
+  codigo: "",
+  descripcion: "",
+  cantidad: "",
+  precioUnit: "",
+});
 
 export default function QuotationForm({ data, onChange }: QuotationFormProps) {
   const set = useCallback(
@@ -25,15 +32,22 @@ export default function QuotationForm({ data, onChange }: QuotationFormProps) {
   };
 
   const addItem = () => {
-    set({
-      items: [
-        ...data.items,
-        { id: String(nextId++), codigo: "", descripcion: "", cantidad: "", precioUnit: "" },
-      ],
-    });
+    set({ items: [...data.items, createEmptyItem()] });
+  };
+
+  const addItemAfter = (id: string) => {
+    const index = data.items.findIndex((it) => it.id === id);
+    if (index < 0) return;
+    const nextItems = [...data.items];
+    nextItems.splice(index + 1, 0, createEmptyItem());
+    set({ items: nextItems });
   };
 
   const removeItem = (id: string) => {
+    if (data.items.length <= 1) {
+      set({ items: [createEmptyItem()] });
+      return;
+    }
     set({ items: data.items.filter((it) => it.id !== id) });
   };
 
@@ -57,10 +71,14 @@ export default function QuotationForm({ data, onChange }: QuotationFormProps) {
       ? Number(item.cantidad) * Number(item.precioUnit)
       : null;
 
-  const grand = data.items.reduce((acc, it) => {
-    const t = lineTotal(it);
-    return acc + (t ?? 0);
-  }, 0);
+  const grand = useMemo(
+    () =>
+      data.items.reduce((acc, it) => {
+        const t = lineTotal(it);
+        return acc + (t ?? 0);
+      }, 0),
+    [data.items]
+  );
 
   const fmtMoney = (n: number) =>
     n.toLocaleString("es-DO", { minimumFractionDigits: 2 });
@@ -142,6 +160,15 @@ export default function QuotationForm({ data, onChange }: QuotationFormProps) {
           <span>Productos / Servicios</span>
         </div>
 
+        <div className="items-toolbar">
+          <div className="items-toolbar-left">
+            <button className="add-btn" onClick={addItem}>
+              <Plus size={13} /> Agregar línea
+            </button>
+          </div>
+
+        </div>
+
         <div className="items-table">
           {/* Header */}
           <div className="items-head">
@@ -151,7 +178,7 @@ export default function QuotationForm({ data, onChange }: QuotationFormProps) {
             <span className="col-qty">Cant.</span>
             <span className="col-price">Precio Unit.</span>
             <span className="col-total">Total</span>
-            <span className="col-del" />
+            <span className="col-del">Acciones</span>
           </div>
 
           {/* Rows */}
@@ -206,23 +233,30 @@ export default function QuotationForm({ data, onChange }: QuotationFormProps) {
                   {tot !== null ? `RD$${fmtMoney(tot)}` : "—"}
                 </span>
 
-                <button
-                  className="col-del del-btn"
-                  onClick={() => removeItem(item.id)}
-                  disabled={data.items.length <= 1}
-                  title="Eliminar fila"
-                >
-                  <Trash2 size={12} />
-                </button>
+                <div className="col-del row-actions">
+                  <button
+                    className="del-btn"
+                    onClick={() => addItemAfter(item.id)}
+                    title="Insertar fila debajo"
+                  >
+                    <Plus size={12} />
+                  </button>
+                  <button
+                    className="del-btn del-btn-danger"
+                    onClick={() => removeItem(item.id)}
+                    title="Eliminar fila"
+                  >
+                    <Trash2 size={12} />
+                    <span>Quitar</span>
+                  </button>
+                </div>
               </div>
             );
           })}
         </div>
 
         <div className="items-footer">
-          <button className="add-btn" onClick={addItem}>
-            <Plus size={13} /> Agregar línea
-          </button>
+          <span className="items-count">{data.items.length} líneas</span>
           <div className="grand-total">
             <span className="gt-label">TOTAL</span>
             <span className="gt-value">RD${fmtMoney(grand)}</span>
@@ -314,9 +348,21 @@ export default function QuotationForm({ data, onChange }: QuotationFormProps) {
           gap: 4px;
           overflow-x: auto;
         }
+        .items-toolbar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 8px;
+          padding: 12px 14px 0;
+        }
+        .items-toolbar-left {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
         .items-head {
           display: grid;
-          grid-template-columns: 28px 80px 1fr 60px 100px 110px 28px;
+          grid-template-columns: 28px 80px 1fr 60px 100px 110px 120px;
           gap: 6px;
           padding: 0 4px 6px;
           border-bottom: 1px solid var(--border);
@@ -331,9 +377,14 @@ export default function QuotationForm({ data, onChange }: QuotationFormProps) {
         }
         .item-row {
           display: grid;
-          grid-template-columns: 28px 80px 1fr 60px 100px 110px 28px;
+          grid-template-columns: 28px 80px 1fr 60px 100px 110px 120px;
           gap: 6px;
           align-items: center;
+        }
+        .row-actions {
+          display: flex;
+          gap: 6px;
+          justify-content: flex-end;
         }
         .row-num {
           font-family: var(--mono);
@@ -374,6 +425,13 @@ export default function QuotationForm({ data, onChange }: QuotationFormProps) {
           justify-content: space-between;
           align-items: center;
           padding: 12px 14px 14px;
+        }
+        .items-count {
+          font-family: var(--mono);
+          font-size: 11px;
+          color: var(--muted);
+          text-transform: uppercase;
+          letter-spacing: .06em;
         }
         .grand-total {
           display: flex;
@@ -443,19 +501,35 @@ export default function QuotationForm({ data, onChange }: QuotationFormProps) {
           transition: all .15s;
         }
         .add-btn:hover { color: var(--amber); border-color: var(--amber); }
-
         .del-btn {
           background: transparent;
-          border: none;
+          border: 1px solid transparent;
           color: var(--muted);
           cursor: pointer;
-          padding: 4px;
+          padding: 5px 7px;
           border-radius: 4px;
           display: flex;
           align-items: center;
+          gap: 4px;
           transition: all .15s;
         }
         .del-btn:hover:not(:disabled) { color: #e05252; background: rgba(224,82,82,.1); }
+        .del-btn-danger {
+          color: #f19a9a;
+          border-color: rgba(224,82,82,.25);
+          background: rgba(224,82,82,.06);
+        }
+        .del-btn-danger span {
+          font-family: var(--mono);
+          font-size: 10px;
+          letter-spacing: .04em;
+          text-transform: uppercase;
+        }
+        .del-btn-danger:hover:not(:disabled) {
+          border-color: rgba(224,82,82,.45);
+          background: rgba(224,82,82,.14);
+          color: #ffd0d0;
+        }
         .del-btn:disabled { opacity: .2; cursor: not-allowed; }
 
         @media (max-width: 900px) {
@@ -475,14 +549,52 @@ export default function QuotationForm({ data, onChange }: QuotationFormProps) {
           :global(.span-3) {
             grid-column: span 1;
           }
-          .items-head,
+          .items-head {
+            display: none;
+          }
           .item-row {
-            min-width: 560px;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 6px;
+            background: rgba(255, 255, 255, 0.01);
+          }
+          .col-num {
+            grid-column: 1 / -1;
+            text-align: left;
+            font-weight: 700;
+          }
+          .col-code,
+          .col-desc,
+          .col-qty,
+          .col-price,
+          .col-total,
+          .col-del {
+            width: 100%;
+          }
+          .col-desc {
+            grid-column: 1 / -1;
+          }
+          .col-total {
+            text-align: left;
+            padding: 6px 0 0;
+          }
+          .row-actions {
+            justify-content: flex-start;
           }
           .items-footer {
             flex-direction: column;
             align-items: stretch;
             gap: 10px;
+          }
+          .items-toolbar {
+            flex-direction: column;
+            align-items: stretch;
+          }
+          .items-toolbar-left {
+            width: 100%;
           }
           .grand-total {
             justify-content: space-between;

@@ -70,9 +70,11 @@ export function generateHtml(data: QuotationData): string {
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
+    @page { size: A4; margin: 0; }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'DM Sans',sans-serif;background:#f4f6f9;color:#1e2d3d;font-size:13px;padding:28px}
-    .page{background:#fff;max-width:790px;margin:auto;border-radius:4px;box-shadow:0 4px 24px rgba(26,46,74,.12);overflow:hidden}
+    html,body{width:100%;height:100%}
+    body{font-family:'DM Sans',sans-serif;background:#fff;color:#1e2d3d;font-size:13px;padding:0;margin:0}
+    .page{background:#fff;width:210mm;min-height:297mm;margin:0 auto;border-radius:0;box-shadow:none;overflow:hidden}
     /* Header */
     .hd{background:#1a2e4a;padding:22px 30px;color:#fff}
     .hd-top{display:flex;align-items:center;gap:14px}
@@ -82,6 +84,7 @@ export function generateHtml(data: QuotationData): string {
       object-fit:contain;
       display:block;
       flex-shrink:0;
+      border-radius:0;
       filter:drop-shadow(0 2px 6px rgba(0,0,0,.28));
     }
     .brand h1{font-size:22px;font-weight:800;letter-spacing:.02em;line-height:1}
