@@ -162,8 +162,35 @@ export default function Home() {
         }
 
         @media (max-width:900px) {
-          .workspace { flex-direction:column; }
-          .pane-form { flex:0 0 auto; }
+          .app {
+            height: auto;
+            min-height: 100dvh;
+            overflow: visible;
+          }
+          .workspace {
+            flex-direction: column;
+            overflow: visible;
+          }
+          .pane {
+            overflow: visible;
+            min-height: 0;
+          }
+          .pane-form {
+            flex: 0 0 auto;
+          }
+          .pane-content {
+            overflow: visible;
+          }
+          .pane-preview {
+            min-height: 60dvh;
+          }
+          .toast {
+            left: 12px;
+            right: 12px;
+            bottom: 12px;
+            transform: none;
+            max-width: none;
+          }
         }
       `}</style>
     </div>

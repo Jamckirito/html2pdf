@@ -160,6 +160,23 @@ export default function LivePreview({ html }: LivePreviewProps) {
           border: none;
           display: block;
         }
+
+        @media (max-width: 700px) {
+          .preview-wrap {
+            min-height: 60dvh;
+            height: auto;
+            overflow: visible;
+          }
+          .preview-stage {
+            padding: 10px;
+          }
+          .preview-frame-wrap {
+            box-shadow: none;
+          }
+          .preview-iframe {
+            min-height: 70dvh;
+          }
+        }
       `}</style>
     </div>
   );

@@ -348,6 +348,8 @@ export default function QuotationForm({ data, onChange }: QuotationFormProps) {
           gap: 4px;
           overflow-x: auto;
           overflow-y: hidden;
+          -webkit-overflow-scrolling: touch;
+          touch-action: pan-x;
         }
         .items-toolbar {
           display: flex;
@@ -545,6 +547,8 @@ export default function QuotationForm({ data, onChange }: QuotationFormProps) {
 
         @media (max-width: 700px) {
           .form-root {
+            height: auto;
+            overflow: visible;
             padding: 12px;
           }
           .grid-2,
